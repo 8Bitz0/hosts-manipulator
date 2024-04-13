@@ -1,15 +1,14 @@
 use iter_tools::Itertools;
 use std::{collections::HashMap, fmt::Display};
 
+/// A type which contains a `HashMap` to represent the common hosts file format
 pub struct Hosts {
     hosts: HashMap<String, String>,
 }
 
 impl Hosts {
     pub fn new() -> Self {
-        Self {
-            hosts: HashMap::new(),
-        }
+        Self::default()
     }
     pub fn extend(&mut self, h: Hosts) {
         self.hosts.extend(h.hosts);
@@ -24,18 +23,11 @@ impl Default for Hosts {
 
 impl Display for Hosts {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut hosts_raw = String::new();
+        let hosts = self.hosts.clone();
 
-        for h in self.hosts.clone().into_iter().sorted() {
-            hosts_raw.push_str(&format!("{} {}\n", h.1, h.0));
+        for h in hosts.into_iter().sorted() {
+            writeln!(f, "{} {}", h.1, h.0)?;
         }
-
-        // Remove any trailing newline
-        if hosts_raw.ends_with('\n') {
-            hosts_raw.remove(hosts_raw.len() - 1);
-        }
-
-        write!(f, "{}", hosts_raw)?;
 
         Ok(())
     }
@@ -75,7 +67,7 @@ mod tests {
 
         let hosts = Hosts {hosts: hosts_map};
 
-        assert_eq!(hosts.to_string(), "0.0.0.0 example.com\n127.0.0.1 localhost");
+        assert_eq!(hosts.to_string(), "0.0.0.0 example.com\n127.0.0.1 localhost\n");
     }
 
     #[test]
@@ -87,7 +79,7 @@ mod tests {
 
         let hosts = Hosts {hosts: hosts_map};
 
-        assert_eq!(hosts.to_string(), "0.0.0.1 example.com\n127.0.0.1 localhost");
+        assert_eq!(hosts.to_string(), "0.0.0.1 example.com\n127.0.0.1 localhost\n");
     }
 
     #[test]

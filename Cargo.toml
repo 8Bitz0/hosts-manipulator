@@ -8,3 +8,11 @@ edition = "2021"
 [dependencies]
 iter_tools = "0.15.0"
 rayon = "1.10.0"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "hosts"
+harness = false
+sample_count = 80
